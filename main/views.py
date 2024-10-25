@@ -81,7 +81,6 @@ def get_makanan_by_kategori(request):
 def get_makanan_detail(request):
     makanan_id = request.GET.get('id')
     makanan = Makanan.objects.get(id=makanan_id)
-    reviews = Review.objects.filter(food_item=makanan)
     data = {
         'id': makanan.id,
         'food_name': makanan.food_name,
@@ -89,6 +88,5 @@ def get_makanan_detail(request):
         'price': makanan.price,
         'image': makanan.image.url if makanan.image else '/static/images/default-food.jpeg',
         'rating_default': makanan.rating_default,
-        'reviews': reviews,
     }
     return JsonResponse(data)

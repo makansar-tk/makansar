@@ -12,5 +12,5 @@ urlpatterns = [
     path('json/<str:id>/', show_json_by_id, name='show_json_by_id'),
     path('edit-dashboard', edit_dashboard, name='edit_dashboard'),
     path('get_makanan_by_kategori/', get_makanan_by_kategori, name='get_makanan_by_kategori'),
-    path('get_makanan_detail/<int:makanan_id>/', get_makanan_detail, name='get_makanan_detail'),
+    path('get_makanan_detail/', get_makanan_detail, name='get_makanan_detail'),
 ]

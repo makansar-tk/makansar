@@ -321,30 +321,17 @@
                                     .then(response => response.json())
                                     .then(detailData => {
                                         productDetail.innerHTML = `
-                                        <div class="detail-image-container">
-                                            <img src="${detailData.image || '/static/images/default-food.jpeg'}" 
-                                                class="detail-image" 
-                                                alt="${detailData.food_name}"
-                                                onerror="this.src='/static/images/default-food.jpeg'"> 
-                                        </div>
-                                        <h3>${detailData.food_name}</h3>
-                                        <p class="food-description">${detailData.food_desc}</p>
-                                        <div class="food-price">Harga: Rp ${detailData.price.toLocaleString()}</div>
-                                        <div class="food-rating">${getStarRating(detailData.rating_default)}</div>
-                                        <h4>Reviews:</h4>
-                                        <div class="reviews-container">`;
-
-                                    detailData.reviews.forEach(review => {
-                                        productDetail.innerHTML += `
-                                            <div class="review">
-                                                <div class="review-rating">${getStarRating(review.rating)}</div>
-                                                <p>${review.comment}</p>
-                                                <small>${new Date(review.created_at).toLocaleDateString()}</small>
+                                            <div class="detail-image-container">
+                                                <img src="${detailData.image || '/static/images/default-food.jpeg'}" 
+                                                     class="detail-image" 
+                                                     alt="${detailData.food_name}"
+                                                     onerror="this.src='/static/images/default-food.jpeg'"> 
                                             </div>
+                                            <h3>${detailData.food_name}</h3>
+                                            <p class="food-description">${detailData.food_desc}</p>
+                                            <div class="food-price">Harga: Rp ${detailData.price.toLocaleString()}</div>
+                                            <div class="food-rating">${getStarRating(detailData.rating_default)}</div>
                                         `;
-                                    });
-
-                                    productDetail.innerHTML += `</div>`; 
 
                                         productDetail.classList.add("visible");
                                         fadeIn(productDetail);
