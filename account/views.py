@@ -10,7 +10,6 @@ from django.contrib.auth import authenticate, login
 def index(request):
     return render(request, 'index.html')
 
-
 def register(request):
     msg = None
     if request.method == 'POST':
@@ -85,8 +84,7 @@ def login_user(request):
 
 
 def buyer(request):
-    return render(request,'buyer.html')
-
+    return render(request,'main/buyer.html')
 
 def seller(request):
     return render(request,'seller.html')

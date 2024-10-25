@@ -3,18 +3,21 @@ from main.models import Makanan, UserProfile
 from main.forms import ProductEntryForm, UserProfileForm
 from django.http import HttpResponse
 from django.core import serializers
+from django.http import JsonResponse
+from review.models import Review
 
 # Create your views here.
 
 def show_main(request):
     product_entries = Makanan.objects.all()
-
+    kategori_list = Makanan.objects.values_list('category', flat=True).distinct()
     context = {
         'team' : 'D04',
         'product_entries' : product_entries,
+        'kategori_list': kategori_list,
     }
 
-    return render(request, "main.html", context)
+    return render(request, "buyer.html", context)
 
 def create_product_entry(request):
     form = ProductEntryForm(request.POST or None)
@@ -62,3 +65,30 @@ def show_json(request):
 def show_json_by_id(request, id):
     data = Makanan.objects.filter(pk=id)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+def get_makanan_by_kategori(request):
+    kategori = request.GET.get('kategori')
+    makanan_list = Makanan.objects.filter(category=kategori)
+    data = [{
+        'id': makanan.id,
+        'food_name': makanan.food_name,
+        'price': float(makanan.price),
+        'rating_default': float(makanan.rating_default),
+        'image': makanan.image.url if makanan.image else None
+    } for makanan in makanan_list]
+    return JsonResponse(data, safe=False)
+
+def get_makanan_detail(request):
+    makanan_id = request.GET.get('id')
+    makanan = Makanan.objects.get(id=makanan_id)
+    reviews = Review.objects.filter(food_item=makanan)
+    data = {
+        'id': makanan.id,
+        'food_name': makanan.food_name,
+        'description': makanan.food_desc,
+        'price': makanan.price,
+        'image': makanan.image.url if makanan.image else '/static/images/default-food.jpeg',
+        'rating_default': makanan.rating_default,
+        'reviews': reviews,
+    }
+    return JsonResponse(data)
