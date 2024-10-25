@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from main.models import Makanan, UserProfile
-from main.forms import ProductEntryForm, UserProfileForm
+from account.models import User
+from main.forms import ProductEntryForm, UserForm, UserProfileForm
 from django.http import HttpResponse
 from django.core import serializers
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from django.contrib import messages
 
-# Create your views here.
-
+@login_required(login_url='/login')
 def show_main(request):
     product_entries = Makanan.objects.all()
 
@@ -14,7 +17,7 @@ def show_main(request):
         'product_entries' : product_entries,
     }
 
-    return render(request, "main.html", context)
+    return render(request, "buyer.html", context)
 
 def create_product_entry(request):
     form = ProductEntryForm(request.POST or None)
@@ -26,25 +29,43 @@ def create_product_entry(request):
     context = {'form': form}
     return render(request, "create_product_entry.html", context)
 
+def logout_user(request):
+    logout(request)
+    return redirect('account:login')
+
 # Fungsi dashboard
 def edit_dashboard(request):
-    profile, created = UserProfile.objects.get_or_create(id=1)  # Sementara pakai ini saat belum ada login form
+    user = request.user
+    profile, created = UserProfile.objects.get_or_create(user_profile=user)  # Link with the correct UserProfile
+
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=profile)
+        user_form = UserForm(request.POST, instance=user)
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=profile)
         action = request.POST.get('action')
 
-        if action == 'save' and form.is_valid():
-            form.save()
+        if action == 'save' and user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
             return redirect('main:show_main')
 
         elif action == 'delete':
-            form = UserProfileForm()
-            return render(request, 'dashboard.html', {'form': form})
+            return render(request, 'confirm_delete.html')  # Render the confirmation template
+
+        elif action == 'confirm_delete':
+            user.delete()
+            logout(request)
+            messages.success(request, 'Your account has been deleted successfully.')
+            return redirect('account:login')
+
+        elif action == 'cancel_delete':
+            return redirect('main:edit_dashboard')
 
     else:
-        form = UserProfileForm(instance=profile)
+        user_form = UserForm(instance=user)
+        profile_form = UserProfileForm(instance=profile)
 
-    context = {'form': form}
+    context = {'user_form': user_form, 'profile_form': profile_form}
     return render(request, 'dashboard.html', context)
 
 def show_xml(request):

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +27,6 @@ SECRET_KEY = 'django-insecure-9wf6e!1iy73#w)vd6-e193%q+e@l6h&==y17j3c6v5tz*=7ll6
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "http://sultan-ibnu-makansar.pbp.cs.ui.ac.id", "https://sultan-ibnu-makansar.pbp.cs.ui.ac.id", "sultan-ibnu-makansar.pbp.cs.ui.ac.id"]
-
 
 # Application definition
 
@@ -118,6 +118,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -6,33 +6,58 @@
 {% block content %}
 <h1>Edit Your Dashboard</h1>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <table>
         <tr>
-            <th>Nama Lengkap:</th>
-            <td>{{ form.nama }}</td>
-        </tr>
-        <tr>
-            <th>Jenis Kelamin:</th>
-            <td>{{ form.jenis_kelamin }}</td>
-        </tr>
-        <tr>
-            <th>Email:</th>
-            <td>{{ form.email }}</td>
-        </tr>
-        <tr>
-            <th>Nomor HP:</th>
+            <th>Foto Profil:</th>
             <td>
-                {{ form.nomor_hp }}
-                {% if form.nomor_hp.errors %}
-                    <div class="error-message">{{ form.nomor_hp.errors }}</div>
+                {{ profile_form.profile_image }}
+                {% if profile_form.profile_image.errors %}
+                    <div class="error">{{ profile_form.profile_image.errors }}</div>
+                {% endif %}
+                <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width: 200px; max-height: 200px;"/>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold; text-align: center;">Nama Lengkap:</td>
+            <td>
+                {{ user_form.nama }}
+                {% if user_form.nama.errors %}
+                    <div class="error">{{ user_form.nama.errors }}</div>
                 {% endif %}
             </td>
         </tr>
         <tr>
-            <th>Alamat:</th>
-            <td>{{ form.alamat }}</td>
+            <td style="font-weight: bold; text-align: center;">Nomor HP:</td>
+            <td>
+                {{ user_form.no_telp }}
+                {% if user_form.no_telp.errors %}
+                    <div class="error">{{ user_form.no_telp.errors }}</div>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold; text-align: center;">Jenis Kelamin:</td>
+            <td>
+                {{ profile_form.jenis_kelamin }}
+                {% if not profile_form.jenis_kelamin.value %}
+                    <div class="error">Jangan lupa pilih gendermu!</div>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold; text-align: center;">Email:</td>
+            <td>{{ profile_form.email }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold; text-align: center;">Alamat:</td>
+            <td>
+                {{ profile_form.alamat }}
+                {% if profile_form.alamat.errors %}
+                    <div class="error">{{ profile_form.alamat.errors }}</div>
+                {% endif %}
+            </td>
         </tr>
         <tr>
             <td></td>
@@ -43,4 +68,15 @@
         </tr>
     </table>
 </form>
+
+<script>
+    document.getElementById('id_profile_image').onchange = function (event) {
+        const [file] = event.target.files;
+        if (file) {
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.src = URL.createObjectURL(file);
+            imagePreview.style.display = 'block';
+        }
+    };
+</script>
 {% endblock %}
