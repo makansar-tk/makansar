@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block meta %}
+<title>User Profile</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="flex flex-col min-h-screen bg-[#f5f3ee]">
+  <div class="container mx-auto px-4 py-8 mt-16 max-w-xl">
+    <h1 class="text-3xl font-bold text-center mb-8" style="font-family: 'Tahoma', sans-serif; color: black;">
+      User Profile
+    </h1>
+
+    <div class="bg-[#ae292b] shadow-md rounded-lg p-6 form-style">
+      <div class="flex flex-col items-center space-y-4">
+        {% if user.userprofile.profile_image %}
+          <img src="{{ user.userprofile.profile_image.url }}" alt="Profile Image" class="profile-image">
+        {% else %}
+          <p>No profile image uploaded.</p>
+        {% endif %}
+        <div class="w-full">
+          <label class="font-semibold text-black">Nama Lengkap:</label>
+          <p class="text-black">{{ user.nama }}</p>
+        </div>
+        <div class="w-full">
+          <label class="font-semibold text-black">Nomor HP:</label>
+          <p class="text-black">{{ user.no_telp }}</p>
+        </div>
+        <div class="w-full">
+          <label class="font-semibold text-black">Jenis Kelamin:</label>
+          <p class="text-black">{{ user.userprofile.jenis_kelamin }}</p>
+        </div>
+        <div class="w-full">
+          <label class="font-semibold text-black">Email:</label>
+          <p class="text-black">{{ user.userprofile.email }}</p>
+        </div>
+        <div class="w-full">
+          <label class="font-semibold text-black">Alamat:</label>
+          <p class="text-black">{{ user.userprofile.alamat }}</p>
+        </div>
+        <div class="flex justify-center mt-6">
+            <a href="{% url 'main:edit_dashboard' %}" class="bg-[#d3af37] text-white font-semibold px-6 py-3 rounded-lg hover:bg-[#d7b000] transition duration-300 ease-in-out">
+              Edit Dashboard
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+</style>
+{% endblock %}

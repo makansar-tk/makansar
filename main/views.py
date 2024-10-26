@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from main.models import Makanan, UserProfile
 from account.models import User
 from main.forms import ProductEntryForm, UserForm, UserProfileForm
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -33,7 +33,11 @@ def logout_user(request):
     logout(request)
     return redirect('account:login')
 
-# Fungsi dashboard
+# Fungsi view user profile
+def view_profile(request):
+    return render(request, 'profile.html')
+
+# Fungsi edit dashboard (profil user)
 def edit_dashboard(request):
     user = request.user
     profile, created = UserProfile.objects.get_or_create(user_profile=user)  # Link with the correct UserProfile
@@ -67,6 +71,14 @@ def edit_dashboard(request):
 
     context = {'user_form': user_form, 'profile_form': profile_form}
     return render(request, 'dashboard.html', context)
+
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        user.delete()
+        logout(request)
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
 def show_xml(request):
     data = Makanan.objects.all()
