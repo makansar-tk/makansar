@@ -198,7 +198,14 @@
 
     <div id="product-cards-container" class="product-cards-container"></div>
 
-    <div id="product-detail" class="product-detail"></div>
+    <div id="product-detail" class="product-detail">
+        <div id="existing-reviews" class="review-section">
+        </div>
+        <textarea id="review-comment" placeholder="Tulis ulasan Anda"></textarea>
+        <input type="number" id="review-rating" min="1" max="5" placeholder="Rating (1-5)">
+        <button id="submit-review">Add Review</button>
+        <button id="see-all-reviews">See All Reviews</button>
+    </div>
 
     <footer>
         <p>Copyright by TIM PBP {{team}}</p>
@@ -207,6 +214,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        let currentProductId = null;
         const buttons = document.querySelectorAll(".kategori-button");
         const productContainer = document.getElementById("product-cards-container");
         const productDetail = document.getElementById("product-detail");
@@ -240,6 +248,20 @@
             }, 50);
         }
 
+        function loadReviews(productId) {
+        fetch(`/review/get_reviews/?id=${productId}`)
+            .then(response => response.json())
+            .then(reviews => {
+                const reviewSection = document.getElementById('existing-reviews');
+                reviewSection.innerHTML = reviews.map(review => `
+                    <div>
+                        <strong>Rating: ${review.rating}</strong>
+                        <p>${review.comment}</p>
+                    </div>
+                `).join('');
+            });
+            }
+
         async function switchView(newView) {
             const views = {
                 'categories': [initialContent, kategoriContainer],
@@ -272,29 +294,87 @@
             }
         });
 
-        function createProductCard(makanan) {
-            const card = document.createElement("div");
-            card.classList.add("product-card");
-            card.setAttribute("data-id", makanan.id);
+// Modifikasi fungsi createProductCard
+function createProductCard(makanan) {
+    const card = document.createElement("div");
+    card.classList.add("product-card");
+    card.setAttribute("data-id", makanan.id);
 
-            const imageUrl = makanan.image || '/static/images/default-food.jpeg'; 
+    const imageUrl = makanan.image || '/static/images/default-food.jpeg'; 
+    // Gunakan rating yang sesuai berdasarkan jumlah review
+    const rating = makanan.jumlah_review > 0 ? makanan.new_rating : makanan.rating_default;
 
-            card.innerHTML = `
-                <div class="product-image-container">
-                    <img src="${imageUrl}" 
-                         alt="${makanan.food_name}" 
-                         class="product-image"
-                         onerror="this.src='/static/images/default-food.jpeg'"> 
-                </div>
-                <div class="product-info">
-                    <div class="product-title">${makanan.food_name}</div>
-                    <div class="product-price">Rp ${makanan.price.toLocaleString()}</div>
-                    <div class="product-rating">${getStarRating(makanan.rating_default)}</div>
-                </div>
-            `;
+    card.innerHTML = `
+        <div class="product-image-container">
+            <img src="${imageUrl}" 
+                 alt="${makanan.food_name}" 
+                 class="product-image"
+                 onerror="this.src='/static/images/default-food.jpeg'"> 
+        </div>
+        <div class="product-info">
+            <div class="product-title">${makanan.food_name}</div>
+            <div class="product-price">Rp ${makanan.price.toLocaleString()}</div>
+            <div class="product-rating">${getStarRating(rating)} - ${rating.toFixed(1)}</div>
+        </div>
+    `;
 
-            return card;
-        }
+    card.addEventListener("click", async () => {
+        currentProductId = makanan.id;
+        loadReviews(currentProductId);
+
+        fetch(`/get_makanan_detail/?id=${makanan.id}`)
+            .then(response => response.json())
+            .then(detailData => {
+                const rating = makanan.jumlah_review > 0 ? makanan.new_rating : makanan.rating_default;                productDetail.innerHTML = `
+                    <div class="detail-image-container">
+                        <img src="${detailData.image || '/static/images/default-food.jpeg'}" 
+                             class="detail-image" 
+                             alt="${detailData.food_name}"
+                             onerror="this.src='/static/images/default-food.jpeg'"> 
+                    </div>
+                    <h3>${detailData.food_name}</h3>
+                    <p class="food-description">${detailData.description}</p>
+                    <div class="location">${detailData.location}</div>
+                    <div class="shop-name">${detailData.shop_name}</div>
+                    <div class="food-price">Harga: Rp ${detailData.price.toLocaleString()}</div>
+                    <div class="food-rating">${getStarRating(rating)} - ${rating.toFixed(1)}</div>
+                    <div class="review-count">Jumlah Review: ${detailData.jumlah_review}</div>
+                    <a href="/review/makanan/${makanan.id}/tambah_review/"><button>Add Review</button></a>
+                    <a href="/review/makanan/${makanan.id}/reviews/"><button>See All Reviews</button></a>
+                `;
+            });
+
+        switchView('detail');
+    });
+    return card;
+}
+
+// Modifikasi event listener untuk tombol kategori
+buttons.forEach(button => {
+    button.addEventListener("click", async () => {
+        const kategori = button.getAttribute("data-kategori");
+
+        await Promise.all([
+            fadeOut(initialContent),
+            fadeOut(kategoriContainer)
+        ]);
+
+        fetch(`/get_makanan_by_kategori/?kategori=${kategori}`)
+            .then(response => response.json())
+            .then(data => {
+                productContainer.innerHTML = '';
+                productDetail.classList.remove("visible");
+
+                data.forEach(makanan => {
+                    const card = createProductCard(makanan);
+                    productContainer.appendChild(card);
+                });
+
+                productContainer.classList.add("visible");
+                switchView('products');
+            });
+    });
+});
 
         buttons.forEach(button => {
             button.addEventListener("click", async () => {
@@ -318,20 +398,37 @@
                                 await fadeOut(productContainer);
 
                                 fetch(`/get_makanan_detail/?id=${makanan.id}`)
-                                    .then(response => response.json())
-                                    .then(detailData => {
-                                        productDetail.innerHTML = `
-                                            <div class="detail-image-container">
-                                                <img src="${detailData.image || '/static/images/default-food.jpeg'}" 
-                                                     class="detail-image" 
-                                                     alt="${detailData.food_name}"
-                                                     onerror="this.src='/static/images/default-food.jpeg'"> 
-                                            </div>
-                                            <h3>${detailData.food_name}</h3>
-                                            <p class="food-description">${detailData.food_desc}</p>
-                                            <div class="food-price">Harga: Rp ${detailData.price.toLocaleString()}</div>
-                                            <div class="food-rating">${getStarRating(detailData.rating_default)}</div>
+                                .then(response => response.json())
+                                .then(detailData => {
+                                    const rating = makanan.jumlah_review > 0 ? makanan.new_rating : makanan.rating_default;
+                                    productDetail.innerHTML = `
+                                        <div class="detail-image-container">
+                                            <img src="${detailData.image || '/static/images/default-food.jpeg'}" 
+                                                class="detail-image" 
+                                                alt="${detailData.food_name}"
+                                                onerror="this.src='/static/images/default-food.jpeg'"> 
+                                        </div>
+                                        <h3>${detailData.food_name}</h3>
+                                        <p class="food-description">${detailData.description}</p>
+                                        <div class="location">${detailData.location}</div>
+                                        <div class="shop-name">${detailData.shop_name}</div>
+                                        <div class="food-price">Harga: Rp ${detailData.price.toLocaleString()}</div>
+                                        <div class="food-rating">${getStarRating(rating)} - ${rating.toFixed(1)}</div>
+                                        <a href="/review/makanan/${makanan.id}/tambah_review/"><button>Add Review</button></a>
+                                        <a href="/review/makanan/${makanan.id}/reviews/"><button>See All Reviews</button></a>
                                         `;
+
+                                        fetch(`/review/get_reviews/?id=${detailData.id}`)
+                                        .then(response => response.json())
+                                        .then(reviews => {
+                                            const reviewSection = document.getElementById('existing-reviews');
+                                            reviewSection.innerHTML = reviews.map(review => `
+                                                <div>
+                                                    <strong>Rating: ${review.rating}</strong>
+                                                    <p>${review.comment}</p>
+                                                </div>
+                                            `).join('');
+                                        });
 
                                         productDetail.classList.add("visible");
                                         fadeIn(productDetail);
@@ -348,7 +445,7 @@
                     });
             });
         });
-
+    
         function getStarRating(rating) {
             let stars = '';
             for (let i = 1; i <= 5; i++) {

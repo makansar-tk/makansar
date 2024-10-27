@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Review - {{ review.food_item.food_name }}</title>
+</head>
+<body>
+    <h1>Edit Review untuk {{ review.food_item.food_name }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Update Review</button>
+    </form>
+    <a href="{%url 'main:show_main' %}"><button>Kembali</button></a>
+</body>
+</html>

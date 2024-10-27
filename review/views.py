@@ -1,38 +1,75 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
-from .models import Review
-from main.models import Makanan  # Adjust import based on FoodItem model location
-from .forms import ReviewForm  # Create this form
+from .models import Review, Makanan
+from .forms import ReviewForm
+from django.http import JsonResponse
 
-# # View to add a review
-# @login_required
-def add_review(request, food_id):
-    food_item = get_object_or_404(Makanan, id=food_id)
 
-    # Check if the user is in the "Pembeli" group
-    # if not request.user.groups.filter(name='Pembeli').exists():
-    #     return redirect('no_access')  
+def show_reviews(request, makanan_id):
+    makanan = get_object_or_404(Makanan, id=makanan_id)
+    reviews = makanan.review_set.all()
+    return render(request, 'show_reviews.html', {'makanan': makanan, 'reviews': reviews})
 
+@login_required
+def tambah_review(request, makanan_id):
+    makanan = get_object_or_404(Makanan, id=makanan_id)
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
             review.buyer = request.user
-            review.food_item = food_item
+            review.food_item = makanan
             review.save()
-            return redirect('food_detail', food_id=food_id)
+
+            # Update jumlah review dan rating
+            makanan.jumlah_review += 1
+            total_rating = sum(r.rating for r in makanan.review_set.all()) + makanan.rating_default  # Tambahkan rating default
+            makanan.new_rating = total_rating / (makanan.jumlah_review + 1)  # Bagi dengan jumlah review + 1
+            makanan.save()
+
+            return redirect('review:show_reviews', makanan_id=makanan.id)
     else:
         form = ReviewForm()
+    return render(request, 'tambah_review.html', {'form': form, 'makanan': makanan})
 
-    return render(request, 'review/add_review.html', {'form': form, 'food_item': food_item})
+@login_required
+def edit_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id, buyer=request.user)
+    makanan = review.food_item
+    original_rating = review.rating
 
-# View to display reviews for a food item
-def food_reviews(request, food_id):
-    food_item = get_object_or_404(Makanan, id=food_id)
-    reviews = Review.objects.filter(food_item=food_item)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            updated_review = form.save(commit=False)
+            updated_review.buyer = request.user
+            updated_review.food_item = makanan
+            updated_review.save()
 
-    if not request.user.groups.filter(name='Pembeli').exists():
-        return redirect('no_access')  
-    
-    return render(request, 'review/food_reviews.html', {'food_item': food_item, 'reviews': reviews})
+            # Update rating dengan mempertimbangkan rating default
+            total_rating = sum(r.rating for r in makanan.review_set.all()) + makanan.rating_default
+            makanan.new_rating = total_rating / (makanan.jumlah_review + 1)
+            makanan.save()
+
+            return redirect('review:show_reviews', makanan_id=makanan.id)
+    else:
+        form = ReviewForm(instance=review)
+    return render(request, 'edit_review.html', {'form': form, 'review': review})
+
+@login_required
+def hapus_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id, buyer=request.user)
+    makanan = review.food_item
+
+    # Update jumlah review dan rating setelah penghapusan
+    makanan.jumlah_review -= 1
+    review.delete()
+
+    if makanan.jumlah_review > 0:
+        total_rating = sum(r.rating for r in makanan.review_set.all()) + makanan.rating_default
+        makanan.new_rating = total_rating / (makanan.jumlah_review + 1)
+    else:
+        makanan.new_rating = makanan.rating_default  # Kembali ke rating default jika tidak ada review
+
+    makanan.save()
+    return redirect('review:show_reviews', makanan_id=makanan.id)

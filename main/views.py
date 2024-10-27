@@ -4,10 +4,11 @@ from main.forms import ProductEntryForm, UserProfileForm
 from django.http import HttpResponse
 from django.core import serializers
 from django.http import JsonResponse
-from review.models import Review
-
+# from review.views import tambah_review, edit_review, hapus_review
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
+@login_required(login_url='/login')
 def show_main(request):
     product_entries = Makanan.objects.all()
     kategori_list = Makanan.objects.values_list('category', flat=True).distinct()
@@ -74,7 +75,8 @@ def get_makanan_by_kategori(request):
         'food_name': makanan.food_name,
         'price': float(makanan.price),
         'rating_default': float(makanan.rating_default),
-        'image': makanan.image.url if makanan.image else None
+        'image': makanan.image.url if makanan.image else None,
+        'new_rating': makanan.new_rating,
     } for makanan in makanan_list]
     return JsonResponse(data, safe=False)
 
@@ -84,9 +86,13 @@ def get_makanan_detail(request):
     data = {
         'id': makanan.id,
         'food_name': makanan.food_name,
+        'location' : makanan.location,
+        'shop_name' : makanan.shop_name,
         'description': makanan.food_desc,
         'price': makanan.price,
         'image': makanan.image.url if makanan.image else '/static/images/default-food.jpeg',
         'rating_default': makanan.rating_default,
+        'new_rating': makanan.new_rating,
     }
     return JsonResponse(data)
+

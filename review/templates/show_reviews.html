@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Semua Review untuk Makanan</title>
+</head>
+<body>
+    <h1>Semua Review</h1>
+    {% if reviews %}
+        <ul>
+            {% for review in reviews %}
+                <li>
+                    <strong>Pengguna:</strong> {{ review.buyer.username }}<br>
+                    <strong>Rating:</strong> {{ review.rating }}<br>
+                    <strong>Komentar:</strong> {{ review.comment }}<br>
+                    <strong>Tanggal:</strong> {{ review.date_created|date:"d-m-Y H:i" }}<br>
+                    {% if review.buyer == user %}  <!-- Memastikan hanya pemilik yang bisa mengedit/hapus -->
+                        <a href="{% url 'review:edit_review' review.id %}">Edit</a> |
+                        <a href="{% url 'review:hapus_review' review.id %}">Hapus</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Belum ada review untuk makanan ini.</p>
+    {% endif %}
+    <a href="{%url 'main:show_main' %}"><button>Kembali</button></a>
+</body>
+</html>
