@@ -15,7 +15,7 @@ class Makanan(models.Model):
     food_desc = models.TextField()
     image = models.ImageField(upload_to='static/images/', null=True, blank=True)
     jumlah_review = models.IntegerField(default=0)
-
+    
 # Model untuk dashboard (khusus untuk pembeli nanti)
 class UserProfile(models.Model):
     nama = models.CharField(max_length=100)
