@@ -307,12 +307,8 @@ function createProductCard(makanan) {
         fetch(`/get_makanan_detail/?id=${makanan.id}`)
             .then(response => response.json())
             .then(detailData => {
-                    let rating;
-                    if (makanan.jumlah_review <= 0) {
-                        rating = makanan.rating_default; 
-                    } else {
-                        rating = makanan.new_rating;
-                    }
+                const rating = makanan.new_rating ? makanan.new_rating : makanan.rating_default;
+
 
                     productDetail.innerHTML = `
                     <div class="detail-image-container">
@@ -340,12 +336,8 @@ function createProductCard(makanan) {
     async function displayProductDetail(productId) {
         currentProductId = productId;
         const detailData = await fetchContent(`/get_makanan_detail/?id=${productId}`);
-        let rating;
-        if (makanan.jumlah_review <= 0) {
-            rating = makanan.rating_default; 
-        } else {
-            rating = makanan.new_rating;
-        }
+        const rating = makanan.new_rating ? makanan.new_rating : makanan.rating_default;
+
             productDetail.innerHTML = `
             <div class="detail-image-container">
                 <img src="${detailData.image || '/static/images/default-food.jpeg'}" class="detail-image" alt="${detailData.food_name}">
@@ -475,12 +467,7 @@ buttons.forEach(button => {
                                 fetch(`/get_makanan_detail/?id=${makanan.id}`)
                                 .then(response => response.json())
                                 .then(detailData => {
-                                let rating;
-                                if (makanan.jumlah_review <= 0) {
-                                    rating = makanan.rating_default; 
-                                } else {
-                                    rating = makanan.new_rating;
-                                }
+                                const rating = makanan.new_rating ? makanan.new_rating : makanan.rating_default;
                                     productDetail.innerHTML = `
                                         <div class="detail-image-container">
                                             <img src="${detailData.image || '/static/images/default-food.jpeg'}" 
