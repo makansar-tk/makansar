@@ -24,10 +24,10 @@
                                     {{ item.quantity }}
                                 </dd>
                                 <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
-                                    {{ item.product.price|intcomma }} IDR
+                                    {{ item.product.price }} IDR
                                 </dd>
                                 <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
-                                    {{ item.subtotal|intcomma }} IDR
+                                    {{ item.subtotal }} IDR
                                 </dd>
                                 <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
                                     <a href="{% url 'order:update_cart_item' item.id %}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
@@ -60,7 +60,7 @@
                                     Total Cost
                                 </dt>
                                 <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                    {{ total|intcomma }} IDR
+                                    {{ total }} IDR
                                 </dd>
                             </div>
                         </dl>

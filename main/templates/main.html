@@ -210,13 +210,13 @@
    <div class="flex shadow-md my-10">
        <div class="w-3/4 bg-white px-10 py-10">
            <div class="flex justify-between border-b pb-8">
-               <h1 class="font-semibold text-2xl">Shopping Cart</h1>
+               <h1 class="font-semibold text-2xl">Kerajang</h1>
                <h2 class="font-semibold text-2xl">{{ cart_items.count }} Items</h2>
            </div>
            <div class="flex mt-10 mb-5">
-               <h3 class="font-semibold text-gray-600 text-xs uppercase w-2/5">Product Details</h3>
-               <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Quantity</h3>
-               <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Price</h3>
+               <h3 class="font-semibold text-gray-600 text-xs uppercase w-2/5">Detail Produk</h3>
+               <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Jumlah</h3>
+               <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Harga</h3>
                <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Total</h3>
            </div>
            {% for item in cart_items %}
@@ -246,7 +246,7 @@
            </a>
        </div>
        <div id="summary" class="w-1/4 px-8 py-10">
-           <h1 class="font-semibold text-2xl border-b pb-8">Order Summary</h1>
+           <h1 class="font-semibold text-2xl border-b pb-8">Pesanan</h1>
            <div class="flex justify-between mt-10 mb-5">
                <span class="font-semibold text-sm uppercase">Items {{ cart_items.count }}</span>
                <span class="font-semibold text-sm">{{ total }} IDR</span>
@@ -254,7 +254,7 @@
 
            <div class="border-t mt-8">
                <div class="flex font-semibold justify-between py-6 text-sm uppercase">
-                   <span>Total cost</span>
+                   <span>Total Harga</span>
                    <span>{{ total }} IDR</span>
                </div>
                <button class="bg-red-500 font-semibold hover:bg-red-600 py-3 text-sm text-white uppercase w-full">Checkout</button>
