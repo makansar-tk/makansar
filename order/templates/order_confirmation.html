@@ -1,43 +1,40 @@
-<!--{% extends 'base.html' %}
-{% block content %}
-<h2>Order Confirmation</h2>
-<p>Thank you for your purchase!</p>
-<p>Order ID: {{ order.id }}</p>
-<p>Order Date: {{ order.order_date }}</p>
-<p>Items:</p>
-<ul>
-    {% for item in order.cart_items.all %}
-    <li>{{ item.product.food_name }} - Quantity: {{ item.quantity }}</li>
-    {% endfor %}
-</ul>
-<p>Total: {{ order.total }}</p>
-{% endblock %}
--->
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h1>Order Detail</h1>
-<p>Order ID: {{ order.id }}</p>
-<p>Order Date: {{ order.order_date }}</p>
-<table>
-    <tr>
-        <th>Product</th>
-        <th>Quantity</th>
-        <th>Price per Item</th>
-        <th>Subtotal</th>
-    </tr>
-    {% for item in cart_items %}
-    <tr>
-        <td>{{ item.product.food_name }}</td>
-        <td>{{ item.quantity }}</td>
-        <td>{{ item.product.price }}</td>
-        <td>{{ item.subtotal }}</td>
-    </tr>
-    {% endfor %}
-    <tr>
-        <td colspan="3">Total</td>
-        <td>{{ total }}</td>
-    </tr>
-</table>
-{% endblock %}
+<div class="bg-[#e8e8ed] font-sans pt-20">
+    <div class="max-w-4xl mx-auto p-4">
+        <h1 class="text-lg font-bold text-gray-800 mb-2">Order Detail</h1>
+        <p class="text-gray-700 mb-4">Terima kasih sudah membeli!</p>
+        <p class="text-gray-700">Order ID: {{ order.id }}</p>
+        <p class="text-gray-700 mb-4">Order Date: {{ order.order_date }}</p>
 
+        <div class="bg-white rounded-lg shadow p-4">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left">
+                        <th class="pb-2">Produk</th>
+                        <th class="pb-2">Jumlah</th>
+                        <th class="pb-2">Harga</th>
+                        <th class="pb-2">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.cart_items.all %}
+                    <tr>
+                        <td>{{ item.product.food_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.product.price }}</td>
+                        <td>{{ item.subtotal }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3" class="pt-2 font-bold text-right">Total</td>
+                        <td class="pt-2">{{ order.total }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
