@@ -1,0 +1,43 @@
+<!--{% extends 'base.html' %}
+{% block content %}
+<h2>Order Confirmation</h2>
+<p>Thank you for your purchase!</p>
+<p>Order ID: {{ order.id }}</p>
+<p>Order Date: {{ order.order_date }}</p>
+<p>Items:</p>
+<ul>
+    {% for item in order.cart_items.all %}
+    <li>{{ item.product.food_name }} - Quantity: {{ item.quantity }}</li>
+    {% endfor %}
+</ul>
+<p>Total: {{ order.total }}</p>
+{% endblock %}
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Order Detail</h1>
+<p>Order ID: {{ order.id }}</p>
+<p>Order Date: {{ order.order_date }}</p>
+<table>
+    <tr>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Price per Item</th>
+        <th>Subtotal</th>
+    </tr>
+    {% for item in cart_items %}
+    <tr>
+        <td>{{ item.product.food_name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.product.price }}</td>
+        <td>{{ item.subtotal }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td colspan="3">Total</td>
+        <td>{{ total }}</td>
+    </tr>
+</table>
+{% endblock %}
+
