@@ -205,6 +205,65 @@
     </section>
 </div>
 
+<!-- Insert Cart and Checkout Below -->
+<div class="container mx-auto mt-10">
+   <div class="flex shadow-md my-10">
+       <div class="w-3/4 bg-white px-10 py-10">
+           <div class="flex justify-between border-b pb-8">
+               <h1 class="font-semibold text-2xl">Shopping Cart</h1>
+               <h2 class="font-semibold text-2xl">{{ cart_items.count }} Items</h2>
+           </div>
+           <div class="flex mt-10 mb-5">
+               <h3 class="font-semibold text-gray-600 text-xs uppercase w-2/5">Product Details</h3>
+               <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Quantity</h3>
+               <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Price</h3>
+               <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Total</h3>
+           </div>
+           {% for item in cart_items %}
+           <div class="flex items-center hover:bg-gray-100 -mx-8 px-6 py-5">
+               <div class="flex w-2/5">
+                   <div class="w-20">
+                       <img class="h-24" src="{% static item.product.image.url %}" alt="{{ item.product.food_name }}">
+                   </div>
+                   <div class="flex flex-col justify-between ml-4 flex-grow">
+                       <span class="font-bold text-sm">{{ item.product.food_name }}</span>
+                       <span class="text-red-500 text-xs">{{ item.product.category }}</span>
+                       <a href="{% url 'order:delete_cart_item' item.id %}" class="font-semibold hover:text-red-500 text-gray-500 text-xs">Remove</a>
+                   </div>
+               </div>
+               <div class="flex justify-center w-1/5">
+                   <button class="mx-2 text-gray-500 focus:outline-none focus:text-black">-</button>
+                   <input class="mx-2 border text-center w-8" type="text" value="{{ item.quantity }}">
+                   <button class="mx-2 text-gray-500 focus:outline-none focus:text-black">+</button>
+               </div>
+               <span class="text-center w-1/5 font-semibold text-sm">{{ item.product.price }} IDR</span>
+               <span class="text-center w-1/5 font-semibold text-sm">{{ item.subtotal }} IDR</span>
+           </div>
+           {% endfor %}
+           <a href="{% url 'order:checkout' %}" class="flex font-semibold text-red-600 text-sm mt-10">
+               <svg class="fill-current mr-2 text-red-600 w-4" viewBox="0 0 448 512"><path d="M134.059 296H361.94c16.62 0 31.059-13.491 31.059-30.059S378.56 235.882 361.94 235.882H134.06C117.44 235.882 103 249.373 103 265.941s13.44 30.059 31.059 30.059zM103 392.118c0 16.568 13.44 30.059 31.059 30.059H361.94c16.62 0 31.059-13.491 31.059-30.059s-14.439-30.059-31.059-30.059H134.06C117.44 362.059 103 375.55 103 392.118zM443.341 112.059c-9.342-15.803-26.4-25.941-44.678-25.941H136.718l-7.161-14.323C121.666 57.506 103.507 48 83.198 48H24c-13.255 0-24 10.745-24 24v24c0 13.255 10.745 24 24 24h35.198l45.418 90.836-39.998 80c-2.839 5.679-1.198 12.321 4.078 15.637 5.275 3.316 12.229 2.138 16.548-2.634l87.716-97.448C186.879 255.259 200.673 248 216 248h168c8.837 0 16-7.163 16-16V136c0-6.154-1.843-12.123-5.259-16.941zM224 440c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56zm192 0c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56z"></path></svg>
+               Proceed to checkout
+           </a>
+       </div>
+       <div id="summary" class="w-1/4 px-8 py-10">
+           <h1 class="font-semibold text-2xl border-b pb-8">Order Summary</h1>
+           <div class="flex justify-between mt-10 mb-5">
+               <span class="font-semibold text-sm uppercase">Items {{ cart_items.count }}</span>
+               <span class="font-semibold text-sm">{{ total }} IDR</span>
+           </div>
+
+           <div class="border-t mt-8">
+               <div class="flex font-semibold justify-between py-6 text-sm uppercase">
+                   <span>Total cost</span>
+                   <span>{{ total }} IDR</span>
+               </div>
+               <button class="bg-red-500 font-semibold hover:bg-red-600 py-3 text-sm text-white uppercase w-full">Checkout</button>
+           </div>
+       </div>
+   </div>
+</div>
+
+
 
 
 <script>
